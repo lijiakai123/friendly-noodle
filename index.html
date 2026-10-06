@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>小事清单 · 中文待办</title>
+<meta name="description" content="简单、轻盈的中文待办清单，让每一天更有条理。">
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:#253e35;background:#f6f7f2;font-synthesis:none}*{box-sizing:border-box}body{margin:0;min-height:100vh}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid #8ebca9;outline-offset:4px}.shell{max-width:780px;margin:auto;padding:44px 24px}.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}.mark{background:#2f6955;color:white;border-radius:11px;width:36px;height:36px;display:grid;place-items:center}header{display:flex;align-items:center;justify-content:space-between}.tag{font-size:12px;color:#6b7d72}.intro{margin:64px 0 28px}.eyebrow{color:#628675;font-size:12px;letter-spacing:3px}h1{font-size:40px;letter-spacing:-1.5px;margin:12px 0}p{color:#77847b;font-size:14px;line-height:1.7}.card{background:#fff;border:1px solid #e1e7de;border-radius:24px;padding:28px;box-shadow:0 12px 40px #354e3506}.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}.top h2{font-size:18px;margin:0}.count{font-size:12px;background:#edf4ee;border-radius:20px;padding:7px 12px;color:#4a745c}form{display:flex;gap:10px}input[type=text]{min-width:0;flex:1;background:#f7f8f5;border:1px solid #e5e9e1;border-radius:12px;padding:14px;color:#253e35}input::placeholder{color:#939b92}.add{background:#2f6955;color:#fff;border:0;border-radius:12px;padding:12px 20px;white-space:nowrap}.add:hover{background:#245441}.filters{display:flex;gap:6px;margin:24px 0 8px;border-bottom:1px solid #edf0e9;padding-bottom:16px}.filter{background:none;border:0;padding:7px 13px;color:#7b867d;font-size:13px;border-radius:7px}.filter[aria-pressed=true]{color:#35654d;background:#edf4ee;font-weight:600}ul{padding:0;margin:0;list-style:none}.task{display:flex;align-items:center;gap:13px;padding:18px 3px;border-bottom:1px solid #edf0e9}.task label{display:flex;gap:13px;align-items:center;flex:1;min-width:0;cursor:pointer}.task input{width:20px;height:20px;margin:0;accent-color:#2f6955;flex-shrink:0}.task span{font-size:14px;line-height:1.5;overflow-wrap:anywhere}.task.done span{text-decoration:line-through;color:#969e96}.delete{border:0;background:none;color:#849187;border-radius:7px;width:36px;height:36px;display:grid;place-items:center}.delete:hover{color:#b35151;background:#fff1ef}.empty{text-align:center;padding:42px 0 48px}.empty-icon{font-size:27px;background:#f1f5ee;color:#6b9777;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;margin:auto}.empty h3{font-size:15px;margin:18px 0 6px}.empty p{font-size:12px;margin:0}.bottom{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#829084;margin-top:20px}.status{min-height:20px;font-size:12px;color:#718474;margin-top:12px}footer{text-align:center;font-size:12px;color:#899689;margin-top:28px}svg{width:17px;height:17px}button{transition:background .15s,color .15s}@media(max-width:560px){.shell{padding:26px 18px}.intro{margin-top:44px}h1{font-size:32px}.card{padding:20px;border-radius:18px}.add{padding:12px 14px}.tag{display:none}.bottom{gap:10px}}
+</style>
+</head>
+<body>
+<main class="shell">
+<header><div class="brand"><span class="mark" aria-hidden="true">✓</span>小事清单</div><span class="tag">把生活理顺，从一件小事开始</span></header>
+<section class="intro"><div class="eyebrow">LESS, BUT BETTER</div><h1>慢慢来，一件一件完成。</h1><p>记下想做的事，让今天轻一点。</p></section>
+<section class="card" aria-label="待办事项">
+<div class="top"><h2>我的待办</h2><span class="count" id="count">0 项待完成</span></div>
+<form id="form"><input id="input" type="text" aria-label="新任务" placeholder="接下来，你想做什么？" maxlength="200" autocomplete="off"><button class="add" type="submit">＋ 添加</button></form>
+<div class="filters" aria-label="筛选任务"><button class="filter" type="button" data-filter="all" aria-pressed="true">全部</button><button class="filter" type="button" data-filter="active" aria-pressed="false">待完成</button><button class="filter" type="button" data-filter="done" aria-pressed="false">已完成</button></div>
+<ul id="list" aria-label="任务列表"></ul>
+<div id="empty" class="empty"><div class="empty-icon" aria-hidden="true">✓</div><h3 id="empty-title">清单空空的，心里轻轻的。</h3><p id="empty-text">添加第一件小事，开启有条理的一天。</p></div>
+<div class="bottom"><span id="summary">今天也要留一点时间给自己</span><span>每一步，都算数。</span></div>
+<div id="status" class="status" role="status" aria-live="polite"></div>
+</section>
+<footer>为专注留白，为小事喝彩。</footer>
+</main>
+<script>
+'use strict';
+const KEY='xiaoshi-tasks-v1';
+const input=document.getElementById('input'),list=document.getElementById('list'),status=document.getElementById('status');
+let tasks=[],filter='all';
+try{const data=JSON.parse(localStorage.getItem(KEY)||'[]');if(Array.isArray(data))tasks=data.filter(t=>t&&typeof t.id==='string'&&typeof t.text==='string'&&typeof t.done==='boolean');}catch{status.textContent='本地记录暂时无法读取，可以继续添加任务。';}
+function save(message){try{localStorage.setItem(KEY,JSON.stringify(tasks));status.textContent=message;}catch{status.textContent=message+'；浏览器未允许保存，刷新后可能丢失。';}render();}
+function render(){
+list.replaceChildren();const visible=tasks.filter(t=>filter==='all'||(filter==='done'?t.done:!t.done));
+for(const task of visible){
+const li=document.createElement('li');li.className='task'+(task.done?' done':'');
+const label=document.createElement('label'),check=document.createElement('input'),text=document.createElement('span'),del=document.createElement('button');
+check.type='checkbox';check.checked=task.done;check.addEventListener('change',()=>{task.done=check.checked;save(task.done?'任务已完成，做得不错！':'任务已恢复为待完成。');});text.textContent=task.text;label.append(check,text);
+del.type='button';del.className='delete';del.setAttribute('aria-label','删除任务：'+task.text);del.title='删除任务';del.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 10v7m4-7v7"/></svg>';del.addEventListener('click',()=>{tasks=tasks.filter(t=>t.id!==task.id);save('任务已删除。');input.focus();});li.append(label,del);list.append(li);
+}
+const done=tasks.filter(t=>t.done).length;document.getElementById('count').textContent=(tasks.length-done)+' 项待完成';document.getElementById('summary').textContent=tasks.length?'已完成 '+done+' / '+tasks.length+' 项':'今天也要留一点时间给自己';document.getElementById('empty').hidden=visible.length>0;
+document.getElementById('empty-title').textContent=filter==='done'?'还没有完成的任务。':filter==='active'&&tasks.length?'待办全部完成啦！':'清单空空的，心里轻轻的。';document.getElementById('empty-text').textContent=filter==='done'?'完成一件小事，就会出现在这里。':filter==='active'&&tasks.length?'休息一下，享受此刻的轻松。':'添加第一件小事，开启有条理的一天。';
+}
+document.getElementById('form').addEventListener('submit',event=>{event.preventDefault();const text=input.value.trim();if(!text){status.textContent='请先输入任务内容。';input.focus();return;}tasks.push({id:globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+Math.random().toString(36).slice(2),text,done:false});input.value='';filter='all';updateFilters();save('新任务已添加。');input.focus();});
+function updateFilters(){document.querySelectorAll('[data-filter]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter===filter)));}
+document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{filter=button.dataset.filter;updateFilters();render();}));render();
+</script>
+</body>
+</html>
