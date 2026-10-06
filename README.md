@@ -12,17 +12,19 @@
 
 ## 运行
 
-无需安装依赖或构建。直接用浏览器打开 `dist/index.html`，或在仓库目录运行：
+无需安装依赖或构建。直接用浏览器打开根目录的 `index.html`，或在仓库目录运行：
 
 ```sh
-python3 -m http.server 8000 --directory dist
+python3 -m http.server 8000
 ```
 
 然后访问 http://localhost:8000。
 
 ## 项目结构
 
-- `dist/index.html`：全部 HTML、CSS 和 JavaScript 源码，亦为可部署网页
+- `index.html`：GitHub Pages 根目录入口，包含全部 HTML、CSS 和 JavaScript
+- `.nojekyll`：禁用 Jekyll，直接提供静态文件
+- `dist/index.html`：现有 Sites 发布版本；更新 Sites 时需与根目录入口同步
 - `.openai/hosting.json`：现有 Sites 项目的部署配置，不含凭据
 
 ## 验证
@@ -32,3 +34,15 @@ python3 -m http.server 8000 --directory dist
 ## 在线网页
 
 https://xiaoshi-todo-muwdykfp.jiakailee424.chatgpt.site （Sites 私有访问）
+
+## GitHub Pages 部署
+
+将本次 Pull Request 合并到 `main` 后，在 GitHub 仓库中打开 **Settings → Pages**：
+
+1. 在 **Build and deployment → Source** 选择 **Deploy from a branch**。
+2. 将分支设置为 **main**，目录设置为 **/(root)**，点击 **Save**。
+3. 等待 Pages 部署完成，访问 https://lijiakai123.github.io/friendly-noodle/ 。
+
+网页无需构建，也不依赖外部字体、图片或脚本。所有样式和脚本均内嵌，没有 `/` 开头的资源路径、`<base>` 标签或需要服务器回退的路由，因此可直接运行于 `/friendly-noodle/` 子路径。后续新增资源请使用 `./assets/...` 等相对路径。
+
+GitHub Pages 和 Sites 是不同站点来源，浏览器本地任务数据不会在两者之间自动同步。
